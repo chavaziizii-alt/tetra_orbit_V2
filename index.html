@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجموعه تترا | زایش تفکر طراحی و منظومه پروژه‌ها</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        humanities: '#D97706',
+                        engineering: '#0284C7',
+                        tetraViolet: '#7C3AED',
+                        tetraEmerald: '#059669',
+                    },
+                    animation: {
+                        'pulse-subtle': 'pulseSubtle 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        pulseSubtle: {
+                            '0%, 100%': { opacity: '0.9', transform: 'scale(1)' },
+                            '50%': { opacity: '1', transform: 'scale(1.03)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #F8FAFC;
+            color: #0F172A;
+            overflow-x: hidden;
+        }
+
+        .glass-panel-light {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05);
+        }
+
+        .glass-card-light {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(241, 245, 249, 1);
+            box-shadow: 0 4px 15px rgba(148, 163, 184, 0.1);
+        }
+
+        .glow-tetra { filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.4)); }
+        .glow-human { filter: drop-shadow(0 0 10px rgba(217, 119, 6, 0.35)); }
+        .glow-eng { filter: drop-shadow(0 0 10px rgba(2, 132, 199, 0.35)); }
+
+        @keyframes flowStream {
+            0% { stroke-dashoffset: 40; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .animate-stream {
+            stroke-dasharray: 8 8;
+            animation: flowStream 1.5s linear infinite;
+        }
+
+        .project-node {
+            transition: transform 0.1s linear;
+            cursor: pointer;
+        }
+        .project-node:hover circle.node-point {
+            r: 10;
+            stroke-width: 3.5;
+            filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.8));
+        }
+
+        .mode-tab {
+            transition: all 0.25s ease;
+        }
+        .mode-tab.active {
+            background: #FFFFFF;
+            border-color: #CBD5E1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #F8FAFC; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between selection:bg-purple-600 selection:text-white">
+
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-24 right-1/4 w-[600px] h-[600px] bg-amber-200/40 rounded-full blur-[140px]"></div>
+        <div class="absolute top-1/3 -left-20 w-[550px] h-[550px] bg-sky-200/40 rounded-full blur-[140px]"></div>
+        <div class="absolute -bottom-24 left-1/3 w-[650px] h-[650px] bg-purple-200/35 rounded-full blur-[150px]"></div>
+    </div>
+
+    <header class="relative z-20 container mx-auto px-6 py-6">
+        <nav class="flex items-center justify-between glass-panel-light rounded-2xl px-6 py-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 via-purple-600 to-sky-500 p-[1.5px] shadow-sm">
+                    <div class="w-full h-full bg-white rounded-[10.5px] flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 9 12 22 22 9 12 2"></polygon>
+                            <line x1="12" y1="2" x2="12" y2="22"></line>
+                            <line x1="2" y1="9" x2="22" y2="9"></line>
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <span class="font-black text-xl tracking-tight bg-gradient-to-r from-amber-600 via-purple-700 to-sky-600 bg-clip-text text-transparent">
+                        مجموعه تترا
+                    </span>
+                    <span class="block text-[11px] text-slate-500 font-medium">هم‌آمیزی علوم انسانی و مهندسی در بستر تفکر طراحی</span>
+                </div>
+            </div>
+
+            <div class="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
+                <a href="#concept" class="hover:text-purple-700 transition-colors">مفهوم هم‌آمیزی</a>
+                <a href="#orbits" class="hover:text-purple-700 transition-colors">منظومه پروژه‌ها</a>
+                <a href="#about" class="hover:text-purple-700 transition-colors">درباره تترا</a>
+            </div>
+
+            <button class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-md shadow-purple-200 transition-all flex items-center gap-2">
+                <span>همکاری با تترا</span>
+                <i class="fa-solid fa-arrow-left text-[10px]"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main class="relative z-10 container mx-auto px-6 py-4 lg:py-8 flex-1 flex items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center w-full">
+            
+            <div class="lg:col-span-5 text-right space-y-6">
+                
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card-light border border-slate-200">
+                    <span class="flex h-2.5 w-2.5 relative">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-purple-600"></span>
+                    </span>
+                    <span class="text-xs text-slate-700 font-bold">معماری نوآوری مجموعه تترا</span>
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black leading-tight lg:leading-[1.28] text-slate-900">
+                    زایش 
+                    <span class="relative inline-block text-purple-700 px-1">
+                        «تفکر طراحی»
+                        <svg class="absolute -bottom-1 left-0 w-full h-2.5 text-purple-300" viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <path d="M0 15 Q 50 0, 100 15" stroke="currentColor" stroke-width="4" fill="none"/>
+                        </svg>
+                    </span>
+                    <br/>
+                    از هم‌آمیزی 
+                    <span class="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">علوم انسانی</span> 
+                    و 
+                    <span class="bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">مهندسی</span>
+                </h1>
+
+                <p class="text-sm sm:text-base text-slate-600 font-normal leading-relaxed max-w-xl">
+                    در <strong class="text-purple-700 font-bold">مجموعه تترا</strong>، تفکر طراحی یک ابزار مستقل نیست؛ بلکه هسته پویایی است که از برهم‌کنش عمیق میان <strong class="text-amber-700 font-semibold">درک، اخلاق و رفتار انسان (علوم انسانی)</strong> با <strong class="text-sky-700 font-semibold">دقت، سیستم و الگوریتم (مهندسی)</strong> متولد می‌شود. این هسته مرکزی، پروژه‌های تترا را به صورت یک منظومه خلق و هدایت می‌کند.
+                </p>
+
+                <div class="space-y-2 pt-1">
+                    <span class="text-xs text-slate-500 font-semibold block">بررسی اجزای منظومه:</span>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button id="btn-mode-all" class="mode-tab active px-3.5 py-2 rounded-xl text-xs font-bold text-purple-700 border border-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-solar-system text-purple-600"></i>
+                            <span>منظومه کامل تترا</span>
+                        </button>
+                        <button id="btn-mode-human" class="mode-tab px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 border border-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-heart-pulse text-amber-600"></i>
+                            <span>ورودی علوم انسانی</span>
+                        </button>
+                        <button id="btn-mode-eng" class="mode-tab px-3.5 py-2 rounded-xl text-xs font-bold text-sky-700 border border-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-code text-sky-600"></i>
+                            <span>ورودی مهندسی</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <button class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-600 to-sky-600 text-white font-bold text-xs shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5">
+                        <span>سفارش طراحی در منظومه تترا</span>
+                        <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                    </button>
+
+                    <button id="btn-reset-orbit" class="px-4 py-3.5 rounded-xl glass-card-light text-xs font-semibold text-slate-700 hover:text-purple-700 hover:bg-white transition-all flex items-center justify-center gap-2 border border-slate-200">
+                        <i class="fa-solid fa-rotate text-purple-600 text-xs"></i>
+                        <span>بازنشانی منظومه</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
+                    <i class="fa-solid fa-hand-pointer text-amber-500 animate-bounce"></i>
+                    <span>روی هر پروژه کلیک کنید تا کارت آن همان‌جا باز شود و وارد صفحه پروژه شوید.</span>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-7 flex justify-center items-center relative">
+                
+                <div class="absolute inset-0 bg-gradient-to-tr from-amber-200/50 via-purple-200/50 to-sky-200/50 rounded-3xl blur-3xl scale-95 pointer-events-none"></div>
+
+                <div id="diagram-card" class="w-full glass-panel-light p-4 sm:p-6 rounded-3xl relative overflow-hidden transition-all duration-300 border border-slate-200 shadow-xl select-none">
+                    
+                    <div class="flex items-center justify-between border-b border-slate-200/80 pb-3 mb-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-600 animate-ping"></span>
+                            <span class="font-mono text-slate-700 font-bold text-[11px]">TETRA_SOLAR_SYSTEM</span>
+                        </div>
+                        <span id="diagram-status" class="text-[11px] font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
+                            وضعیت: هم‌آمیزی فعال (منظومه تترا)
+                        </span>
+                    </div>
+
+                    <!-- بوم اصلی و کارت شناور درون آن -->
+                    <div class="relative w-full">
+                        <svg id="tetra-svg" viewBox="0 0 700 580" class="w-full h-auto drop-shadow-md overflow-visible" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="grad-stream-human" x1="0%" y1="100%" x2="0%" y2="0%">
+                                    <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.9" />
+                                    <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.7" />
+                                </linearGradient>
+
+                                <linearGradient id="grad-stream-eng" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#0284C7" stop-opacity="0.9" />
+                                    <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.7" />
+                                </linearGradient>
+
+                                <radialGradient id="grad-tetra-core" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.95" />
+                                    <stop offset="50%" stop-color="#7C3AED" stop-opacity="0.6" />
+                                    <stop offset="100%" stop-color="#4C1D95" stop-opacity="0" />
+                                </radialGradient>
+
+                                <radialGradient id="grad-tetra-diamond" cx="50%" cy="40%" r="60%">
+                                    <stop offset="0%" stop-color="#C084FC" />
+                                    <stop offset="100%" stop-color="#6D28D9" />
+                                </radialGradient>
+                            </defs>
+
+                            <g id="field-humanities" class="transition-all duration-500">
+                                <path d="M 450,470 C 420,410 320,380 350,290" fill="none" stroke="url(#grad-stream-human)" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+                                <path d="M 450,470 C 420,410 320,380 350,290" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" class="animate-stream" />
+                                
+                                <g transform="translate(450, 470)">
+                                    <circle r="32" fill="rgba(255,255,255,0.95)" stroke="#F59E0B" stroke-width="2" class="glow-human" />
+                                    <circle r="25" fill="#FFFBEB" />
+                                    <text x="0" y="5" text-anchor="middle" fill="#D97706" font-size="16" font-family="FontAwesome">&#xf004;</text>
+                                    
+                                    <rect x="-60" y="38" width="120" height="22" rx="8" fill="#FFFFFF" stroke="#FDE68A" stroke-width="1.5" />
+                                    <text x="0" y="53" text-anchor="middle" fill="#B45309" font-size="10.5" font-family="Vazirmatn" font-weight="bold">علوم انسانی (ورودی)</text>
+                                </g>
+                            </g>
+
+                            <g id="field-engineering" class="transition-all duration-500">
+                                <path d="M 210,130 C 270,180 290,210 350,290" fill="none" stroke="url(#grad-stream-eng)" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+                                <path d="M 210,130 C 270,180 290,210 350,290" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" class="animate-stream" />
+                                
+                                <g transform="translate(210, 130)">
+                                    <circle r="32" fill="rgba(255,255,255,0.95)" stroke="#0284C7" stroke-width="2" class="glow-eng" />
+                                    <circle r="25" fill="#F0F9FF" />
+                                    <text x="0" y="5" text-anchor="middle" fill="#0284C7" font-size="16" font-family="FontAwesome">&#xf121;</text>
+                                    
+                                    <rect x="-60" y="38" width="120" height="22" rx="8" fill="#FFFFFF" stroke="#BAE6FD" stroke-width="1.5" />
+                                    <text x="0" y="53" text-anchor="middle" fill="#0369A1" font-size="10.5" font-family="Vazirmatn" font-weight="bold">زیرساخت مهندسی</text>
+                                </g>
+                            </g>
+
+                            <g id="tetra-solar-system">
+                                
+                                <circle cx="350" cy="290" r="140" fill="url(#grad-tetra-core)" class="animate-pulse-subtle" />
+
+                                <g transform="translate(350, 290) rotate(-14)">
+                                    <ellipse cx="0" cy="0" rx="100" ry="42" fill="none" stroke="#A78BFA" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.75" />
+                                    <ellipse cx="0" cy="0" rx="150" ry="64" fill="none" stroke="#818CF8" stroke-width="1.5" stroke-dasharray="8 5" opacity="0.7" />
+                                    <ellipse cx="0" cy="0" rx="200" ry="85" fill="none" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="10 6" opacity="0.65" />
+                                    <ellipse cx="0" cy="0" rx="250" ry="106" fill="none" stroke="#E2E8F0" stroke-width="1.5" stroke-dasharray="12 6" opacity="0.6" />
+                                </g>
+
+                                <g id="nodes-container">
+                                    <g class="project-node" data-orbit="1" data-angle="0" data-speed="0.015"
+                                       data-name="پلتفرم هم‌احساس دانا" data-type="علوم انسانی + هوش تعاملی" 
+                                       data-desc="طراحی سیستم ارزیابی رفتار کاربر مبتنی بر روان‌شناسی شناختی و تحلیل داده" data-link="#dana-project">
+                                        <circle r="12" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2.5" class="node-point glow-human" />
+                                        <circle r="4" fill="#D97706" />
+                                    </g>
+
+                                    <g class="project-node" data-orbit="2" data-angle="0" data-speed="-0.01"
+                                       data-name="موتور محاسباتی رسا" data-type="مهندسی زیرساخت + مدل‌سازی" 
+                                       data-desc="معماری توزیع‌شده برای تحلیل داده‌های پیچیده ارگانیک با دقت بالای سیستمیک" data-link="#rasa-project">
+                                        <circle r="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="2.5" class="node-point glow-eng" />
+                                        <circle r="4" fill="#0284C7" />
+                                    </g>
+
+                                    <g class="project-node" data-orbit="2" data-angle="3.14159" data-speed="-0.01"
+                                       data-name="زیست‌دیجیتال پانو" data-type="تفکر طراحی + معماری انسان‌محور" 
+                                       data-desc="هم‌آمیزی تجربه زیست انسان در محیط‌های دیجیتالی مبتنی بر اصول اخلاق مهندسی" data-link="#pano-project">
+                                        <circle r="13" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.5" class="node-point glow-tetra" />
+                                        <circle r="5" fill="#7C3AED" />
+                                    </g>
+
+                                    <g class="project-node" data-orbit="3" data-angle="0" data-speed="0.007"
+                                       data-name="آزمایشگاه UX تترا" data-type="انسان‌شناسی کاربردی + تست دقیق" 
+                                       data-desc="پایگاه سنجش رفتار، تعاملات لمسی و احساس کاربر در مواجهه با سیستم‌های مهندسی" data-link="#ux-lab-project">
+                                        <circle r="12" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2.5" class="node-point glow-human" />
+                                        <circle r="4" fill="#D97706" />
+                                    </g>
+
+                                    <g class="project-node" data-orbit="3" data-angle="3.14159" data-speed="0.007"
+                                       data-name="سامانه پایش رفتار سیرا" data-type="علوم شناختی + معماری داده" 
+                                       data-desc="مدل‌سازی روان‌شناختی رفتار مشتریان جهت بهینه‌سازی کدهای سرور و رابط کاربری" data-link="#sira-project">
+                                        <circle r="12" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.5" class="node-point glow-tetra" />
+                                        <circle r="4" fill="#7C3AED" />
+                                    </g>
+
+                                    <g class="project-node" data-orbit="4" data-angle="1.5708" data-speed="-0.005"
+                                       data-name="شبکه دانش آرا" data-type="تفکر طراحی + هوش داده" 
+                                       data-desc="استخراج مفاهیم علوم انسانی و تبدیل آن به گراف‌های دانش مهندسی قابل تحلیل" data-link="#ara-project">
+                                        <circle r="13" fill="#FFFFFF" stroke="#059669" stroke-width="2.5" class="node-point" />
+                                        <circle r="4" fill="#059669" />
+                                    </g>
+
+                                    <g class="project-node" data-orbit="4" data-angle="4.71239" data-speed="-0.005"
+                                       data-name="پلتفرم استراتژی تترا" data-type="مدیریت محصول + تحلیل رفتار" 
+                                       data-desc="کاتالیزور تدوین نقشه راه محصول با هم‌آمیزی مستمر نیازهای انسانی و توانمندی مهندسی" data-link="#strategy-project">
+                                        <circle r="12" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2.5" class="node-point glow-human" />
+                                        <circle r="4" fill="#D97706" />
+                                    </g>
+                                </g>
+
+                                <g transform="translate(350, 290)" class="cursor-pointer">
+                                    <circle r="48" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2.5" class="glow-tetra shadow-xl" />
+                                    <circle r="40" fill="url(#grad-tetra-diamond)" />
+
+                                    <g transform="translate(0, -2) scale(1.15)">
+                                        <polygon points="0,-16 -14,-2 0,16 14,-2 0,-16" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round"/>
+                                        <line x1="0" y1="-16" x2="0" y2="16" stroke="#FFFFFF" stroke-width="1.5"/>
+                                        <line x1="-14" y1="-2" x2="14" y2="-2" stroke="#FFFFFF" stroke-width="1.5"/>
+                                    </g>
+
+                                    <text x="0" y="-58" text-anchor="middle" fill="#6D28D9" font-size="13" font-family="Vazirmatn" font-weight="900" class="glow-tetra">
+                                        هسته تترا
+                                    </text>
+                                    <text x="0" y="-44" text-anchor="middle" fill="#7C3AED" font-size="9.5" font-family="Vazirmatn" font-weight="bold">
+                                        (تفکر طراحی)
+                                    </text>
+                                </g>
+
+                            </g>
+                        </svg>
+
+                        <!-- کارت جدید: باز شدن دقیقاً در همان نقطه پروژه بدون تیره کردن صفحه -->
+                        <div id="inline-project-card" class="absolute hidden z-40 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-purple-200 shadow-2xl w-64 transform -translate-x-1/2 -translate-y-full transition-all duration-200 pointer-events-auto">
+                            <div class="flex items-start justify-between gap-2 mb-1.5">
+                                <span id="card-badge" class="text-[9px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+                                    پروژه تترا
+                                </span>
+                                <button id="close-inline-card" class="text-slate-400 hover:text-slate-600 text-xs px-1">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <h4 id="card-title" class="font-black text-slate-900 text-xs mb-1"></h4>
+                            <p id="card-desc" class="text-[11px] text-slate-500 leading-relaxed mb-3 line-clamp-2"></p>
+                            
+                            <a id="card-action-btn" href="#" class="w-full py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] text-center shadow-md shadow-purple-200 transition-all flex items-center justify-center gap-1.5">
+                                <span>ورود به صفحه پروژه</span>
+                                <i class="fa-solid fa-arrow-left text-[9px]"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-1 glass-card-light p-3.5 rounded-2xl flex items-center justify-between text-xs border border-slate-200">
+                        <div class="flex items-center gap-3 text-slate-800">
+                            <div class="w-9 h-9 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700">
+                                <i id="info-icon" class="fa-solid fa-atom text-base"></i>
+                            </div>
+                            <div>
+                                <span id="info-title" class="block font-bold text-purple-900 text-xs sm:text-sm">منظومه در حال چرخش پروژه‌ها</span>
+                                <span id="info-desc" class="block text-[11px] text-slate-500 font-medium">روی هر پروژه کلیک کنید تا کارت همان‌جا باز شود.</span>
+                            </div>
+                        </div>
+                        <span id="synergy-badge" class="hidden sm:inline-block text-xs font-mono font-bold text-purple-700 bg-purple-100 px-3 py-1.5 rounded-lg border border-purple-200">
+                            TETRA_NUCLEUS
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="relative z-10 container mx-auto px-6 py-4 border-t border-slate-200/80">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
+            <div class="p-3 glass-card-light rounded-2xl flex items-center justify-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                <span class="text-xs text-slate-700 font-medium"><strong>علوم انسانی:</strong> درک مسئله، روان‌شناسی و بستر زیست کاربر</span>
+            </div>
+            <div class="p-3 glass-card-light rounded-2xl flex items-center justify-center gap-2.5 border border-purple-200 bg-purple-50/50">
+                <span class="w-3 h-3 rounded-full bg-purple-600 animate-ping"></span>
+                <span class="text-xs text-purple-900 font-bold"><strong>هسته تترا (تفکر طراحی):</strong> کاتالیزور تبدیل ایده به پروژه‌های عملی</span>
+            </div>
+            <div class="p-3 glass-card-light rounded-2xl flex items-center justify-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-sky-500"></span>
+                <span class="text-xs text-slate-700 font-medium"><strong>زیرساخت مهندسی:</strong> پایداری کد، معماری سیستم و لایه الگوریتم</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const diagramCard = document.getElementById('diagram-card');
+            const diagramStatus = document.getElementById('diagram-status');
+            const infoTitle = document.getElementById('info-title');
+            const infoDesc = document.getElementById('info-desc');
+            const infoIcon = document.getElementById('info-icon');
+            const synergyBadge = document.getElementById('synergy-badge');
+
+            const fieldHumanities = document.getElementById('field-humanities');
+            const fieldEngineering = document.getElementById('field-engineering');
+
+            const btnAll = document.getElementById('btn-mode-all');
+            const btnHuman = document.getElementById('btn-mode-human');
+            const btnEng = document.getElementById('btn-mode-eng');
+            const btnReset = document.getElementById('btn-reset-orbit');
+
+            const modeButtons = [btnAll, btnHuman, btnEng];
+            const projectNodes = document.querySelectorAll('.project-node');
+            const tetraSvg = document.getElementById('tetra-svg');
+
+            // عناصر کارت شناور
+            const inlineCard = document.getElementById('inline-project-card');
+            const cardTitle = document.getElementById('card-title');
+            const cardDesc = document.getElementById('card-desc');
+            const cardBadge = document.getElementById('card-badge');
+            const cardActionBtn = document.getElementById('card-action-btn');
+            const closeInlineCard = document.getElementById('close-inline-card');
+
+            // مشخصات مدارهای بیضوی
+            const orbits = {
+                1: { rx: 100, ry: 42 },
+                2: { rx: 150, ry: 64 },
+                3: { rx: 200, ry: 85 },
+                4: { rx: 250, ry: 106 }
+            };
+
+            const cx = 350;
+            const cy = 290;
+            const tiltAngle = -14 * (Math.PI / 180);
+
+            let isPaused = false;
+
+            // انیمیشن ریاضی دقیق روی خط مدار
+            function animateOrbits() {
+                if (!isPaused) {
+                    projectNodes.forEach(node => {
+                        const orbitId = node.getAttribute('data-orbit');
+                        const speed = parseFloat(node.getAttribute('data-speed'));
+                        let angle = parseFloat(node.getAttribute('data-angle'));
+
+                        angle += speed;
+                        node.setAttribute('data-angle', angle);
+
+                        const orbit = orbits[orbitId];
+                        const unrotatedX = orbit.rx * Math.cos(angle);
+                        const unrotatedY = orbit.ry * Math.sin(angle);
+
+                        const x = cx + unrotatedX * Math.cos(tiltAngle) - unrotatedY * Math.sin(tiltAngle);
+                        const y = cy + unrotatedX * Math.sin(tiltAngle) + unrotatedY * Math.cos(tiltAngle);
+
+                        node.setAttribute('transform', `translate(${x}, ${y})`);
+                    });
+                }
+                requestAnimationFrame(animateOrbits);
+            }
+
+            requestAnimationFrame(animateOrbits);
+
+            // بستن کارت و ادامه چرخش
+            function hideInlineCard() {
+                inlineCard.classList.add('hidden');
+                isPaused = false;
+            }
+
+            closeInlineCard.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideInlineCard();
+            });
+
+            // کلیک روی جای خالی بوم برای بستن کارت
+            diagramCard.addEventListener('click', (e) => {
+                if (!inlineCard.contains(e.target)) {
+                    hideInlineCard();
+                }
+            });
+
+            // باز شدن کارت دقیقا روی همان نقطه کلیک‌شده
+            projectNodes.forEach(node => {
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    isPaused = true; // متوقف کردن چرخش
+
+                    const name = node.getAttribute('data-name');
+                    const type = node.getAttribute('data-type');
+                    const desc = node.getAttribute('data-desc');
+                    const link = node.getAttribute('data-link');
+
+                    cardTitle.textContent = name;
+                    cardBadge.textContent = type;
+                    cardDesc.textContent = desc;
+                    cardActionBtn.setAttribute('href', link);
+
+                    // محاسبه موقعیت دقیق نقطه کلیک‌شده نسبت به کادر SVG
+                    const svgRect = tetraSvg.getBoundingClientRect();
+                    const parentRect = tetraSvg.parentElement.getBoundingClientRect();
+
+                    const transform = node.getAttribute('transform');
+                    const coords = transform.replace('translate(', '').replace(')', '').split(',');
+                    const nodeX = parseFloat(coords[0]);
+                    const nodeY = parseFloat(coords[1]);
+
+                    // تبدیل مختصات SVG به پیکسل خروجی
+                    const scaleX = svgRect.width / 700;
+                    const scaleY = svgRect.height / 580;
+
+                    const posX = (nodeX * scaleX) + (svgRect.left - parentRect.left);
+                    const posY = (nodeY * scaleY) + (svgRect.top - parentRect.top) - 15; // ۱۵ پیکسل بالاتر از دایره
+
+                    inlineCard.style.left = `${posX}px`;
+                    inlineCard.style.top = `${posY}px`;
+                    inlineCard.classList.remove('hidden');
+                });
+            });
+
+            // افکت پارالاکس ۳ بعدی
+            diagramCard.addEventListener('mousemove', (e) => {
+                if (isPaused) return; // در صورت باز بودن کارت، افکت ۳بعدی متوقف می‌شود تا کارت جابه‌جا نشود
+                const rect = diagramCard.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                diagramCard.style.transform = `perspective(1000px) rotateY(${x * 0.005}deg) rotateX(${-y * 0.005}deg)`;
+            });
+
+            diagramCard.addEventListener('mouseleave', () => {
+                diagramCard.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+            });
+
+            // کنترل حالت‌های منظومه
+            function setMode(activeBtn, mode) {
+                modeButtons.forEach(btn => btn.classList.remove('active'));
+                activeBtn.classList.add('active');
+
+                fieldHumanities.style.opacity = '1';
+                fieldEngineering.style.opacity = '1';
+
+                if (mode === 'human') {
+                    fieldEngineering.style.opacity = '0.25';
+                    infoTitle.textContent = 'ورودی علوم انسانی (Humanities Vector)';
+                    infoTitle.className = 'block font-bold text-amber-800 text-xs sm:text-sm';
+                    infoDesc.textContent = 'شامل مطالعات رفتار شناختی، اخلاق فناوری، انسان‌شناسی و پایش نیازهای کاربر.';
+                    infoIcon.className = 'fa-solid fa-heart-pulse text-amber-600';
+                    diagramStatus.textContent = 'تمرکز: ورودی علوم انسانی';
+                    diagramStatus.className = 'text-[11px] font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200';
+                    synergyBadge.textContent = 'HUMANITIES_FEED';
+                } else if (mode === 'eng') {
+                    fieldHumanities.style.opacity = '0.25';
+                    infoTitle.textContent = 'ورودی زیرساخت مهندسی (Engineering Vector)';
+                    infoTitle.className = 'block font-bold text-sky-800 text-xs sm:text-sm';
+                    infoDesc.textContent = 'شامل معماری سیستم‌های توزیع‌شده، پایداری کد، امنیت و داده‌کاوی.';
+                    infoIcon.className = 'fa-solid fa-code text-sky-600';
+                    diagramStatus.textContent = 'تمرکز: ورودی مهندسی';
+                    diagramStatus.className = 'text-[11px] font-bold text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-200';
+                    synergyBadge.textContent = 'ENGINEERING_FEED';
+                } else {
+                    infoTitle.textContent = 'منظومه در حال چرخش پروژه‌ها';
+                    infoTitle.className = 'block font-bold text-purple-900 text-xs sm:text-sm';
+                    infoDesc.textContent = 'تفکر طراحی حاصل از تغذیه مستمر علوم انسانی و مهندسی است که پروژه‌های منظومه را شکل می‌دهد.';
+                    infoIcon.className = 'fa-solid fa-atom text-purple-600';
+                    diagramStatus.textContent = 'وضعیت: هم‌آمیزی فعال (منظومه تترا)';
+                    diagramStatus.className = 'text-[11px] font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200';
+                    synergyBadge.textContent = 'TETRA_NUCLEUS';
+                }
+            }
+
+            btnAll.addEventListener('click', () => setMode(btnAll, 'all'));
+            btnHuman.addEventListener('click', () => setMode(btnHuman, 'human'));
+            btnEng.addEventListener('click', () => setMode(btnEng, 'eng'));
+
+            btnReset.addEventListener('click', () => {
+                setMode(btnAll, 'all');
+                hideInlineCard();
+                diagramCard.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>
